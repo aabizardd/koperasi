@@ -408,7 +408,7 @@
   <tr>
     <td>Nama Produk</td>
 
-    <td><select class="form-control" id="id_produk" name="id_produk">
+    <td><select class="form-control" id="id_tipeSimpanan" name="id_tipeSimpanan">
       
             <?php foreach($produk as $row){
               echo '<option value="'.$row->id_produk.'">'.$row->nama.' '.$row->ukuran.' '.$row->kualitas.'</option>';
