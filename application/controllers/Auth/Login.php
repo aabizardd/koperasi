@@ -1,21 +1,25 @@
 <?php
 /**
- * 
- * 
+ *
+ *
  */
-class Login extends MY_Controller{
-    public function __construct() {
+class Login extends MY_Controller
+{
+    public function __construct()
+    {
         parent::__construct();
         $this->load->model('User_model', 'user');
         parent::session_needed_except('test_aja|index|create_session');
     }
 
-    public function index() {
+    public function index()
+    {
         $this->has_session();
         $this->load->view('auth/login/index');
     }
-    
-    public function create_session() {
+
+    public function create_session()
+    {
         $user_auth = $this->input->post('user_auth');
         $password = $this->input->post('password');
 
@@ -23,54 +27,57 @@ class Login extends MY_Controller{
             [
                 'field' => 'user_auth',
                 'label' => 'Username or Email',
-                'rules' => 'required'
+                'rules' => 'required',
             ],
             [
                 'field' => 'password',
                 'label' => 'Password',
-                'rules' => 'required'
-            ]
+                'rules' => 'required',
+            ],
         ]);
 
-        if ($this->form_validation->run() === FALSE) {
+        if ($this->form_validation->run() === false) {
             $this->load->view('auth/login/index');
         } else {
             $data = [
                 'user_auth' => $user_auth,
-                'password' => md5($password)
+                'password' => md5($password),
             ];
             $this->detailed_check($data);
         }
     }
 
-    public function logout() {
+    public function logout()
+    {
         $this->session->sess_destroy();
         redirect("auth/login/");
     }
 
-    private function has_session() {
+    private function has_session()
+    {
         if ($this->session->status) {
             redirect('pengaduan/view_pengaduan');
         }
     }
 
-    public function detailed_check($data) {
+    public function detailed_check($data)
+    {
         $user = $this->user->user_existence($data);
         $user_data = $user->row();
-        if($user_data->username === $data['user_auth'] || $user_data->email === $data['user_auth']){
+        if ($user_data->username === $data['user_auth'] || $user_data->email === $data['user_auth']) {
             if ($user_data->password === $data['password']) {
-            $this->session->set_userdata(
-                [
-                    'id'        => $user_data->user_id,
-                    'level'     => $user_data->level,
-                    'status'    => 'logged in'
+                $this->session->set_userdata(
+                    [
+                        'id' => $user_data->user_id,
+                        'level' => $user_data->level,
+                        'status' => 'logged in',
                     ]
                 );
-                redirect('pengaduan/view_pengaduan','refresh');
+                redirect('pengaduan/view_pengaduan', 'refresh');
             } else {
-                $this->session->set_flashdata('login_failure_message','Incorrect Password');
+                $this->session->set_flashdata('login_failure_message', 'Incorrect Password');
                 $this->load->view('auth/login/index');
-            } 
+            }
         } else {
             $this->session->set_flashdata('login_failure_message', 'Account Not Registered, Please Register For Login');
             redirect('auth/login/');
